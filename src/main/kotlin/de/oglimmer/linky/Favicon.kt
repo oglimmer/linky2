@@ -44,6 +44,7 @@ object Favicon {
             .response()
             .filter { it.status().code() < 300 }
             .map { if (it.requestHeaders()["content-type"].contains("image")) url else "" }
+            .filter { it.isNotBlank() }
 
     private fun addProtocolIfMissing(url: String): String {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
