@@ -22,7 +22,13 @@ if test $argv[1] = "get-links";
 end
 
 if test $argv[1] = "create-links";
-  set DOMAIN_TO_CREATE $DOMAINS[(random 0 (count $DOMAINS))]
-  set TAG_TO_CREATE $TAGS[(random 0 (count $TAGS))]
+  set DOMAIN_TO_CREATE $DOMAINS[(random 1 (count $DOMAINS))]
+  set TAG_TO_CREATE $TAGS[(random 1 (count $TAGS))]
   curl -s -H "Authorization: Bearer $TOKEN" $BASE_URL/links -d '{"linkUrl":"'$DOMAIN_TO_CREATE'", "tags": ["'$TAG_TO_CREATE'"], "pageTitle": "this is the way"}' -H "content-type: application/json"|jq
+end
+
+if test $argv[1] = "create-custom-links";
+  set DOMAIN_TO_CREATE "$argv[2]"
+  set TAG_TO_CREATE $TAGS[(random 1 (count $TAGS))]
+  curl -s -H "Authorization: Bearer $TOKEN" $BASE_URL/links -d '{"linkUrl":"'$DOMAIN_TO_CREATE'", "tags": ["'$TAG_TO_CREATE'"]}' -H "content-type: application/json"|jq
 end

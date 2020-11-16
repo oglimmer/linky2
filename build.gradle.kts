@@ -21,6 +21,7 @@ dependencies {
     implementation("javax.xml.bind:jaxb-api")
     implementation("org.springframework.security:spring-security-oauth2-resource-server")
     implementation("org.springframework.security:spring-security-oauth2-jose")
+    implementation("io.github.microutils:kotlin-logging-jvm:2.0.2")
 
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
     implementation("org.springframework.boot:spring-boot-starter-security")

@@ -20,23 +20,24 @@ class LinkController(private var repository: LinkCrudRepository) {
     }
 
     @PostMapping("/links")
-    fun create(@AuthenticationPrincipal jwt: Jwt, @RequestBody linkCreate: LinkCreate): Mono<Link> {
-        return Favicon.loadFavicon(linkCreate.linkUrl)
-                .flatMap { faviconUrl ->
-                    repository.save(Link(generateId(),
-                            completeProtocol(linkCreate.linkUrl),
-                            0,
-                            Instant.now(),
-                            Instant.now(),
-                            copyTags(linkCreate.tags),
-                            linkCreate.rssUrl,
-                            linkCreate.pageTitle,
-                            linkCreate.notes,
-                            "link",
-                            faviconUrl,
-                            jwt.subject))
-                }
-    }
+    fun create(@AuthenticationPrincipal jwt: Jwt, @RequestBody linkCreate: LinkCreate): Mono<Link> =
+            TitleProducer.buildTitle(linkCreate).flatMap { title ->
+                Favicon.loadFavicon(linkCreate.linkUrl)
+                        .flatMap { faviconUrl ->
+                            repository.save(Link(generateId(),
+                                    completeProtocol(linkCreate.linkUrl),
+                                    0,
+                                    Instant.now(),
+                                    Instant.now(),
+                                    copyTags(linkCreate.tags),
+                                    linkCreate.rssUrl,
+                                    title,
+                                    linkCreate.notes,
+                                    "link",
+                                    faviconUrl,
+                                    jwt.subject))
+                        }
+            }
 
     private fun completeProtocol(linkUrl: String): String {
         if (!linkUrl.startsWith("http://") && !linkUrl.startsWith("https://")) {
@@ -66,6 +67,6 @@ data class LinkCreate(
         val linkUrl: String,
         val tags: List<String>,
         val rssUrl: String?,
-        val pageTitle: String,
+        val pageTitle: String?,
         val notes: String?
 )

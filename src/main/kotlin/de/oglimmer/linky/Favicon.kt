@@ -1,9 +1,12 @@
 package de.oglimmer.linky
 
+import mu.KotlinLogging
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.netty.http.client.HttpClient
 import java.net.URL
+
+private val logger = KotlinLogging.logger {}
 
 object Favicon {
     const val defaultIconUrl = "DEFAULT.ico"
@@ -17,14 +20,30 @@ object Favicon {
             .map {
                 var mappedUrl = ""
                 if (it.status().code() < 300) {
+                    logger.debug { "Looking for $url and got ${it.status().code()}" }
                     mappedUrl = buildUrl(url, true)
                 } else if (it.status().code() < 400) {
-                    mappedUrl = it.responseHeaders().get("location")
+                    logger.debug { "Looking for $url and got ${it.status().code()} using ${it.responseHeaders().get("location")}" }
+                    mappedUrl = "REDIRECT:${it.responseHeaders().get("location")}"
                 }
                 mappedUrl
             }
+            .flatMap {
+                if (it.startsWith("REDIRECT:"))
+                    checkFavicon(it.substring("REDIRECT:".length))
+                else
+                    Mono.just(it)
+            }
             .switchIfEmpty { loadFavionFromHtml(url) }
             .onErrorContinue { _, _ -> defaultIconUrl }
+
+    private fun checkFavicon(url: String): Mono<String> = HttpClient.create()
+            .followRedirect(false)
+            .get()
+            .uri(buildUrl(url, true))
+            .response()
+            .filter { it.status().code() < 300 }
+            .map { if (it.requestHeaders()["content-type"].contains("image")) url else "" }
 
     private fun addProtocolIfMissing(url: String): String {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
