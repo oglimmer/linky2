@@ -1,27 +1,25 @@
 package de.oglimmer.linky.rest
 
-import de.oglimmer.linky.entity.User
 import de.oglimmer.linky.dao.UserCrudRepository
+import de.oglimmer.linky.entity.User
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.bcrypt.BCrypt
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.ResponseStatus
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
 import java.util.*
 
 @RestController
+@RequestMapping("/v1/users")
 class UserController(private var repository: UserCrudRepository) {
     companion object {
         val SECRET_KEY = UUID.randomUUID().toString()
         const val TOKEN_LIFETIME = 1000 * 60 * 60
     }
 
-    @PostMapping("/users")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@RequestBody userRequestParam: UserRequestParam): Mono<UserResponse> = repository
             .save(User(UUID.randomUUID().toString(),

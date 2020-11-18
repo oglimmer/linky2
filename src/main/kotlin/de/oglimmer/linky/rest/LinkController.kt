@@ -1,9 +1,9 @@
 package de.oglimmer.linky.rest
 
-import de.oglimmer.linky.logic.Favicon
-import de.oglimmer.linky.entity.Link
-import de.oglimmer.linky.logic.TitleProducer
 import de.oglimmer.linky.dao.LinkCrudRepository
+import de.oglimmer.linky.entity.Link
+import de.oglimmer.linky.logic.Favicon
+import de.oglimmer.linky.logic.TitleProducer
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,18 +19,19 @@ import java.util.*
 private val logger = KotlinLogging.logger {}
 
 @RestController
+@RequestMapping("/v1/links")
 class LinkController(private var repository: LinkCrudRepository) {
 
-    @GetMapping("/links")
+    @GetMapping
     fun loadAll(@AuthenticationPrincipal jwt: Jwt): Flux<Link> = repository.findByUserid(jwt.subject)
 
 
-    @GetMapping("/links/by-tags/{tag}")
+    @GetMapping("/by-tags/{tag}")
     fun getByTag(@AuthenticationPrincipal jwt: Jwt, @PathVariable tag: String): Flux<Link> =
             repository.findByUserIdAndTags(jwt.subject, arrayOf(tag))
 
 
-    @PostMapping("/links")
+    @PostMapping
     fun create(@AuthenticationPrincipal jwt: Jwt, @RequestBody linkCreate: LinkCreate): Mono<Link> =
             TitleProducer.buildTitle(linkCreate).flatMap { title ->
                 Favicon.loadFavicon(linkCreate.linkUrl)
@@ -49,7 +50,7 @@ class LinkController(private var repository: LinkCrudRepository) {
                         }
             }
 
-    @PutMapping("/links/{linkId}")
+    @PutMapping("/{linkId}")
     @PreAuthorize("hasPermission(#linkId, 'LINK')")
     fun update(@AuthenticationPrincipal jwt: Jwt,
                @PathVariable linkId: String,
@@ -64,16 +65,16 @@ class LinkController(private var repository: LinkCrudRepository) {
                     }
                     .flatMap { repository.save(it!!) }
 
-    @GetMapping("/links/{linkId}")
+    @GetMapping("/{linkId}")
     @PreAuthorize("hasPermission(#linkId, 'LINK')")
     fun loadOne(@AuthenticationPrincipal jwt: Jwt,
                 @PathVariable linkId: String): Mono<Link?> = repository.findByIdAndUserid(linkId, jwt.subject)
 
-    @DeleteMapping("/links/{linkId}")
+    @DeleteMapping("/{linkId}")
     @PreAuthorize("hasPermission(#linkId, 'LINK')")
     fun deleteLink(@PathVariable linkId: String) = repository.deleteById(linkId)
 
-    @GetMapping("/links/{linkId}/redirect")
+    @GetMapping("/{linkId}/redirect")
     @PreAuthorize("hasPermission(#linkId, 'LINK')")
     fun redirect(@AuthenticationPrincipal jwt: Jwt,
                  @PathVariable linkId: String): Mono<ResponseEntity<String>> =
