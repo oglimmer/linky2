@@ -1,5 +1,6 @@
 package de.oglimmer.linky
 
+import de.oglimmer.linky.logic.Favicon
 import org.junit.jupiter.api.Test
 
 class FaviconTest {

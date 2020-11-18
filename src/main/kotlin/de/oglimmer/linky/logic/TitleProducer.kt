@@ -1,5 +1,6 @@
-package de.oglimmer.linky
+package de.oglimmer.linky.logic
 
+import de.oglimmer.linky.rest.LinkCreate
 import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClient
 import java.net.URL

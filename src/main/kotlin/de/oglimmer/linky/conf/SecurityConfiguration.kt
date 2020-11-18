@@ -1,13 +1,20 @@
-package de.oglimmer.linky
+package de.oglimmer.linky.conf
 
+import de.oglimmer.linky.rest.UserController
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
+import org.springframework.context.annotation.Configuration
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
+import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.web.servlet.invoke
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
+
 
 @EnableWebSecurity
 class SecurityConfiguration : WebSecurityConfigurerAdapter() {
@@ -36,4 +43,17 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             }
         }
     }
+}
+
+@Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+class MethodSecurityConfig(private val customPermissionEvaluator: CustomPermissionEvaluator)
+    : GlobalMethodSecurityConfiguration() {
+
+    override fun createExpressionHandler(): MethodSecurityExpressionHandler {
+        val expressionHandler = DefaultMethodSecurityExpressionHandler()
+        expressionHandler.setPermissionEvaluator(customPermissionEvaluator)
+        return expressionHandler
+    }
+
 }

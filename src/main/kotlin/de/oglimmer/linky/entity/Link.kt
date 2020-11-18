@@ -1,4 +1,4 @@
-package de.oglimmer.linky
+package de.oglimmer.linky.entity
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
@@ -15,7 +15,6 @@ data class Link(
         val rssUrl: String?,
         val pageTitle: String,
         val notes: String?,
-        val type: String,
         val faviconUrl: String?,
         val userid: String
 )

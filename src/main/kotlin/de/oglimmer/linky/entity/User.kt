@@ -1,4 +1,4 @@
-package de.oglimmer.linky
+package de.oglimmer.linky.entity
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed

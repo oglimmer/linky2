@@ -1,5 +1,7 @@
-package de.oglimmer.linky
+package de.oglimmer.linky.rest
 
+import de.oglimmer.linky.entity.User
+import de.oglimmer.linky.dao.UserCrudRepository
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.http.HttpStatus

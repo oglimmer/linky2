@@ -1,4 +1,4 @@
-package de.oglimmer.linky
+package de.oglimmer.linky.logic
 
 import mu.KotlinLogging
 import reactor.core.publisher.Mono
