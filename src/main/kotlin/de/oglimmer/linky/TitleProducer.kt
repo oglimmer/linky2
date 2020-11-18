@@ -18,11 +18,8 @@ object TitleProducer {
         return "${urlClass.protocol}://${urlClass.host}" + if (urlClass.defaultPort != urlClass.port && urlClass.port != -1) ":${urlClass.port}" else ""
     }
 
-    private fun buildUrl(url: String, urlIsFavicon: Boolean): String {
-        if (urlIsFavicon) {
-            return "${getBaseUrl(url)}/favicon.ico"
-        }
-        return addProtocolIfMissing(url)
+    private fun buildUrl(url: String): String {
+        return "${getBaseUrl(url)}/favicon.ico"
     }
 
     fun buildTitle(linkCreate: LinkCreate): Mono<String> =
@@ -32,7 +29,7 @@ object TitleProducer {
                 HttpClient.create()
                         .followRedirect(true)
                         .get()
-                        .uri(buildUrl(linkCreate.linkUrl, false))
+                        .uri(buildUrl(linkCreate.linkUrl))
                         .responseSingle { _, bytes -> bytes.asString() }
                         .map { TitleHtmlScraper.getTitleFromHtml(it) ?: linkCreate.linkUrl }
 

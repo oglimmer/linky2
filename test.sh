@@ -27,6 +27,15 @@ if test $argv[1] = "create-links";
   curl -s -H "Authorization: Bearer $TOKEN" $BASE_URL/links -d '{"linkUrl":"'$DOMAIN_TO_CREATE'", "tags": ["'$TAG_TO_CREATE'"], "pageTitle": "this is the way"}' -H "content-type: application/json"|jq
 end
 
+if test $argv[1] = "get-link";
+  curl -s -H "Authorization: Bearer $TOKEN" $BASE_URL/links/$argv[2] |jq
+end
+
+if test $argv[1] = "update-link";
+  set LOADED_DATA (curl -s -H "Authorization: Bearer $TOKEN" $BASE_URL/links/$argv[2])
+  curl -s -H "Authorization: Bearer $TOKEN" -X PUT $BASE_URL/links/$argv[2] -d "$LOADED_DATA" -H "content-type: application/json"|jq
+end
+
 if test $argv[1] = "create-custom-links";
   set DOMAIN_TO_CREATE "$argv[2]"
   set TAG_TO_CREATE $TAGS[(random 1 (count $TAGS))]

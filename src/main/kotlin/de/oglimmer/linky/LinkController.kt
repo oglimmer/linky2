@@ -2,10 +2,7 @@ package de.oglimmer.linky
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.Instant
@@ -38,6 +35,34 @@ class LinkController(private var repository: LinkCrudRepository) {
                                     jwt.subject))
                         }
             }
+
+    @PutMapping("/links/{linkId}")
+    fun update(@AuthenticationPrincipal jwt: Jwt,
+               @PathVariable linkId: String,
+               @RequestBody linkCreate: LinkCreate): Mono<Link> =
+            repository.findByIdAndUserid(linkId, jwt.subject)
+                    .map {
+                        Link(id = generateId(),
+                                linkUrl = completeProtocol(linkCreate.linkUrl),
+                                callCounter = it!!.callCounter,
+                                lastCalled = it.lastCalled,
+                                createdDate = it.createdDate,
+                                tags = copyTags(linkCreate.tags),
+                                rssUrl = linkCreate.rssUrl,
+                                pageTitle = linkCreate.pageTitle!!,
+                                notes = linkCreate.notes,
+                                type = it.type,
+                                faviconUrl = it.faviconUrl,
+                                userid = it.userid)
+                    }
+                    .flatMap {
+                        repository.save(it)
+                    }
+
+    @GetMapping("/links/{linkId}")
+    fun loadOne(@AuthenticationPrincipal jwt: Jwt,
+                @PathVariable linkId: String): Mono<Link> =
+            repository.findByIdAndUserid(linkId, jwt.subject)
 
     private fun completeProtocol(linkUrl: String): String {
         if (!linkUrl.startsWith("http://") && !linkUrl.startsWith("https://")) {
