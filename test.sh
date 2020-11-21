@@ -31,6 +31,14 @@ if test $argv[1] = "create-links";
   curl -s -H "Authorization: Bearer $TOKEN" $BASE_URL/v1/links -d '{"linkUrl":"'$DOMAIN_TO_CREATE'", "tags": ["'$TAG_TO_CREATE'"], "pageTitle": "this is the way"}' -H "content-type: application/json"|jq
 end
 
+if test $argv[1] = "create-link";
+  curl -s -H "Authorization: Bearer $TOKEN" $BASE_URL/v1/links -d '{"linkUrl":"oglimmer.de", "tags": ["portal", "giga"], "pageTitle": "this is the way"}' -H "content-type: application/json"|jq
+end
+
+if test $argv[1] = "create-tag";
+  curl -s -H "Authorization: Bearer $TOKEN" $BASE_URL/v1/tags -X POST -H "content-type: application/json"|jq
+end
+
 if test $argv[1] = "get-link";
   curl -s -H "Authorization: Bearer $TOKEN" $BASE_URL/v1/links/$argv[2] |jq
 end
@@ -52,4 +60,8 @@ if test $argv[1] = "create-custom-links";
   set DOMAIN_TO_CREATE "$argv[2]"
   set TAG_TO_CREATE $TAGS[(random 1 (count $TAGS))]
   curl -s -H "Authorization: Bearer $TOKEN" $BASE_URL/v1/links -d '{"linkUrl":"'$DOMAIN_TO_CREATE'", "tags": ["'$TAG_TO_CREATE'"]}' -H "content-type: application/json"|jq
+end
+
+if test $argv[1] = "get-tags";
+  curl -s -H "Authorization: Bearer $TOKEN" $BASE_URL/v1/tags|jq
 end

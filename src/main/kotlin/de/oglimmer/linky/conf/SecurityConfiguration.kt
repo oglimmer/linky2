@@ -1,6 +1,6 @@
 package de.oglimmer.linky.conf
 
-import de.oglimmer.linky.rest.UserController
+import de.oglimmer.linky.logic.UserService
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import org.springframework.context.annotation.Configuration
@@ -29,7 +29,7 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             oauth2ResourceServer {
                 jwt {
                     jwtDecoder = JwtDecoder {
-                        val jwt = Jwts.parser().setSigningKey(UserController.SECRET_KEY).parse(it)
+                        val jwt = Jwts.parser().setSigningKey(UserService.SECRET_KEY).parse(it)
                         val body = jwt.body
                         if (body !is Claims) {
                             throw RuntimeException("Failed to get claims from jwt")

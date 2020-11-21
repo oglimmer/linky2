@@ -10,7 +10,7 @@ interface LinkCrudRepository : ReactiveCrudRepository<Link?, String?> {
 
     fun findByUserid(userId: String): Flux<Link>
 
-    fun findByIdAndUserid(id: String, userId: String): Mono<Link?>
+    fun findByIdAndUserid(id: String, userId: String): Mono<Link>
 
     @Query(value = "{'userid': ?0, 'tags': {\$all : ?1 }}")
     fun findByUserIdAndTags(userId: String, tags: Array<String>): Flux<Link>
