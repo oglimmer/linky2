@@ -1,11 +1,13 @@
 package de.oglimmer.linky.logic
 
 import de.oglimmer.linky.rest.LinkCreate
+import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClient
 import java.net.URL
 
-object TitleProducer {
+@Service
+class TitleProducer {
 
     private fun addProtocolIfMissing(url: String): String {
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
@@ -36,7 +38,7 @@ object TitleProducer {
 
 }
 
-object TitleHtmlScraper {
+private object TitleHtmlScraper {
 
     private val linkRegEx = "<title>(.*)</title>".toRegex(setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE))
 

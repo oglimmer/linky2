@@ -17,11 +17,15 @@ private val logger = KotlinLogging.logger {}
 
 @Service
 @Transactional
-class LinkService(private var repository: LinkCrudRepository, private var tagsCrudRepository: TagsCrudRepository) {
+class LinkService(
+        private val repository: LinkCrudRepository,
+        private val tagsCrudRepository: TagsCrudRepository,
+        private val favicon: Favicon,
+        private val titleProducer: TitleProducer) {
 
     fun createLink(linkCreate: LinkCreate, subject: String): Mono<Link> {
-        return TitleProducer.buildTitle(linkCreate).flatMap { title ->
-            Favicon.loadFavicon(linkCreate.linkUrl)
+        return titleProducer.buildTitle(linkCreate).flatMap { title ->
+            favicon.loadFavicon(linkCreate.linkUrl)
                     .flatMap { faviconUrl ->
                         repository.save(Link(id = generateId(),
                                 linkUrl = completeProtocol(linkCreate.linkUrl),

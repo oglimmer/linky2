@@ -1,6 +1,7 @@
 package de.oglimmer.linky.logic
 
 import mu.KotlinLogging
+import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.netty.http.client.HttpClient
@@ -8,8 +9,11 @@ import java.net.URL
 
 private val logger = KotlinLogging.logger {}
 
-object Favicon {
-    const val defaultIconUrl = "DEFAULT.ico"
+@Service
+class Favicon {
+    companion object {
+        const val defaultIconUrl = "DEFAULT.ico"
+    }
 
     fun loadFavicon(url: String): Mono<String> = HttpClient.create()
             .followRedirect(false)
@@ -75,7 +79,7 @@ object Favicon {
 
 }
 
-object FaviconHtmlScraper {
+private object FaviconHtmlScraper {
 
     private val linkRegEx = "<link (.*)>".toRegex(setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE))
     private val relRegEx = "rel=[\"'][^\"]*icon[^\"']*[\"']".toRegex(setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE))
