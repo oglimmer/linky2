@@ -1,4 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.w3c.dom.Node
+import javax.xml.parsers.DocumentBuilderFactory
+import javax.xml.xpath.XPathConstants
+import javax.xml.xpath.XPathFactory
 
 plugins {
     id("org.springframework.boot") version "2.4.0"
@@ -69,30 +73,26 @@ tasks.getByName<JacocoReport>("jacocoTestReport") {
     }
 }
 
-//tasks.create("coverageReport") {
-//    dependsOn(tasks.getByName<JacocoReport>("jacocoTestReport"))
-//
-//    val reportFile = project.file("build/reports/jacoco/test/jacocoTestReport.xml")
-//    inputs.file(reportFile)
-//
-//    doLast {
-//        val slurper = groovy.util.XmlSlurper()
-//        slurper.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
-//        slurper.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-//        val xml = slurper.parse(reportFile)
-//        val counter = xml.counter.find { node ->
-//            node.@ type == 'BRANCH'
-//        }
-//        val missed = counter.@ missed . toDouble ()
-//        val covered = counter.@ covered . toDouble ()
-//        val total = missed + covered
-//        val percentage = covered / total * 100
-//
-//        println(String.format("Missed %.0f branches%n", missed))
-//        println(String.format("Covered %.0f branches%n", covered))
-//        println(String.format("Total %.0f%%%n", percentage))
-//    }
-//}
+tasks.create("coverageReport") {
+    dependsOn(tasks.getByName<JacocoReport>("jacocoTestReport"))
+    doLast {
+        val builderFactory = DocumentBuilderFactory.newInstance()
+        builderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
+        builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+        val builder = builderFactory.newDocumentBuilder()
+        val xmlDocument = builder.parse("build/reports/jacoco/test/jacocoTestReport.xml")
+        val xPath = XPathFactory.newInstance().newXPath()
+        val expression = "/report/counter[@type='BRANCH']"
+        val node = xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODE) as Node
+        val covered = node.attributes.getNamedItem("covered").nodeValue.toDouble()
+        val missed = node.attributes.getNamedItem("missed").nodeValue.toDouble()
+        val total = missed + covered
+        val percentage = covered / total * 100
+        println(String.format("Missed %.0f branches", missed))
+        println(String.format("Covered %.0f branches", covered))
+        println(String.format("Total %.0f%%", percentage))
+    }
+}
 
 
 //tasks.create<Test>("integrationTest") {
