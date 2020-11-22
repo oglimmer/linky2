@@ -10,7 +10,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import reactor.core.publisher.Mono
 
 @TestMethodOrder(MethodOrderer.MethodName::class)
-class UserRestTest(@Autowired private var webTestClient: WebTestClient) : AbstractMongoIntegrationTest() {
+class UserRestTest(@Autowired private val webTestClient: WebTestClient) : AbstractMongoIntegrationTest() {
 
     @Test
     fun test1CreateUser() {

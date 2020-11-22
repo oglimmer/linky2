@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import reactor.test.StepVerifier
 import java.util.*
 
-class MongoDBContainerTest(@Autowired private var mongo: ReactiveMongoTemplate) : AbstractMongoIntegrationTest() {
+class MongoDBContainerTest(@Autowired private val mongo: ReactiveMongoTemplate) : AbstractMongoIntegrationTest() {
 
     @Test
     fun testConnection() {
