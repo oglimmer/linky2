@@ -7,8 +7,8 @@ import javax.xml.xpath.XPathFactory
 plugins {
     id("org.springframework.boot") version "2.4.0"
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
-    kotlin("jvm") version "1.4.10"
-    kotlin("plugin.spring") version "1.4.10"
+    kotlin("jvm") version "1.4.20"
+    kotlin("plugin.spring") version "1.4.20"
     id("jacoco")
 }
 
@@ -85,7 +85,7 @@ tasks.create("coverageReport") {
         val builder = builderFactory.newDocumentBuilder()
         val xmlDocument = builder.parse("build/reports/jacoco/test/jacocoTestReport.xml")
         val xPath = XPathFactory.newInstance().newXPath()
-        val expression = "/report/counter[@type='BRANCH']"
+        val expression = "/report/counter[@type='INSTRUCTION']"
         val node = xPath.compile(expression).evaluate(xmlDocument, XPathConstants.NODE) as Node
         val covered = node.attributes.getNamedItem("covered").nodeValue.toDouble()
         val missed = node.attributes.getNamedItem("missed").nodeValue.toDouble()

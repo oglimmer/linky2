@@ -71,6 +71,48 @@ class LinkRestTest(@Autowired private val webTestClient: WebTestClient, @LocalSe
     }
 
     @Test
+    fun test1bCreateLink() {
+        val linkCreate = LinkCreate(
+                linkUrl = "https://spiegel.de",
+                tags = listOf("anothertag"),
+                rssUrl = null,
+                pageTitle = "this is the title",
+                notes = null
+        )
+        webTestClient.post().uri("/v1/links")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer $accessToken")
+                .body(Mono.just(linkCreate), linkCreate.javaClass)
+                .exchange()
+                .expectStatus().isCreated
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.id").isNotEmpty
+    }
+
+    @Test
+    fun test1cCreateLink() {
+        val linkCreate = LinkCreate(
+                linkUrl = "http://geizhals.de",
+                tags = listOf("anothertag"),
+                rssUrl = null,
+                pageTitle = null,
+                notes = null
+        )
+        webTestClient.post().uri("/v1/links")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer $accessToken")
+                .body(Mono.just(linkCreate), linkCreate.javaClass)
+                .exchange()
+                .expectStatus().isCreated
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.id").isNotEmpty
+    }
+
+    @Test
     fun test2GetLink() {
         webTestClient.get().uri("/v1/links/${createdLink!!.id}")
                 .accept(MediaType.APPLICATION_JSON)
@@ -98,7 +140,7 @@ class LinkRestTest(@Autowired private val webTestClient: WebTestClient, @LocalSe
                 .expectStatus().isOk
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody()
-                .jsonPath("\$.length()").isEqualTo(1)
+                .jsonPath("\$.length()").isEqualTo(3)
     }
 
     @Test

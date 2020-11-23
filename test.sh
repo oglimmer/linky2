@@ -31,8 +31,12 @@ if test $argv[1] = "create-links";
   curl -s -H "Authorization: Bearer $TOKEN" $BASE_URL/v1/links -d '{"linkUrl":"'$DOMAIN_TO_CREATE'", "tags": ["'$TAG_TO_CREATE'"], "pageTitle": "this is the way"}' -H "content-type: application/json"|jq
 end
 
-if test $argv[1] = "create-link";
+if test $argv[1] = "create-link-1";
   curl -s -H "Authorization: Bearer $TOKEN" $BASE_URL/v1/links -d '{"linkUrl":"oglimmer.de", "tags": ["portal", "giga"], "pageTitle": "this is the way"}' -H "content-type: application/json"|jq
+end
+
+if test $argv[1] = "create-link-2";
+  curl -s -H "Authorization: Bearer $TOKEN" $BASE_URL/v1/links -d '{"linkUrl":"http://geizhals.de", "tags": ["portal", "giga"], "pageTitle": "this is the way"}' -H "content-type: application/json"|jq
 end
 
 if test $argv[1] = "create-tag";
