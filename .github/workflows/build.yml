@@ -27,4 +27,8 @@ jobs:
         java-version: 11
     - uses: eskatos/gradle-command-action@v1
       with:
-        arguments: build
+        arguments: test jacocoTestReport coverageReport
+    - uses: actions/upload-artifact@v2
+      with:
+        name: html-report
+        path: build/reports/jacoco/test/html/
