@@ -25,9 +25,8 @@ jobs:
     - uses: actions/setup-java@v1
       with:
         java-version: 11
-    - uses: eskatos/gradle-command-action@v1
-      with:
-        arguments: test jacocoTestReport coverageReport
+    - name: Build with Gradle
+      run: ./gradlew test jacocoTestReport coverageReport
     - uses: actions/upload-artifact@v2
       with:
         name: html-report
