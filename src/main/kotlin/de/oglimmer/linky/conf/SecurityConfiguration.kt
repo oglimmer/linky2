@@ -3,6 +3,7 @@ package de.oglimmer.linky.conf
 import de.oglimmer.linky.logic.UserService
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler
@@ -14,6 +15,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.web.servlet.invoke
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
+import org.springframework.web.servlet.config.annotation.CorsRegistry
+import org.springframework.web.servlet.config.annotation.EnableWebMvc
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 
 @EnableWebSecurity
@@ -21,10 +25,12 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity?) {
         http {
-            httpBasic {}
+            cors { }
             authorizeRequests {
-                authorize("/links/**")
-                authorize("/**", permitAll)
+                // order matters here
+                // authorize(method = HttpMethod.OPTIONS, pattern = "/**", access = permitAll)
+                authorize(pattern = "/v1/users/**", access = permitAll)
+                authorize(pattern = "/**")
             }
             oauth2ResourceServer {
                 jwt {
@@ -43,6 +49,20 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             }
         }
     }
+}
+
+
+@Configuration
+@EnableWebMvc
+class WebConf : WebMvcConfigurer {
+
+    @Value("\${linky.ui.domain}")
+    lateinit var uiDomain: String
+
+    override fun addCorsMappings(registry: CorsRegistry) {
+        registry.addMapping("/**").allowedOrigins(uiDomain)
+    }
+
 }
 
 @Configuration

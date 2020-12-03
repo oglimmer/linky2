@@ -16,8 +16,8 @@ import reactor.core.publisher.Mono
 class LinkController(val linkService: LinkService) {
 
     @GetMapping
-    fun loadAll(@AuthenticationPrincipal jwt: Jwt): Flux<Link> =
-            linkService.loadAllLinks(jwt.subject)
+    fun loadAll(@AuthenticationPrincipal jwt: Jwt?): Flux<Link> =
+            linkService.loadAllLinks(jwt!!.subject)
 
     @GetMapping("/by-tags/{tag}")
     fun getByTag(@AuthenticationPrincipal jwt: Jwt, @PathVariable tag: String): Flux<Link> =
