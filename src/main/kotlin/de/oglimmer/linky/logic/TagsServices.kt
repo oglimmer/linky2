@@ -22,12 +22,12 @@ class TagsService(private val repository: TagsCrudRepository) {
         )
     )
 
-    fun processSavedLink(userId: String, savedLink: Link) = repository.findByUserid(userId)
+    fun processSavedLink(savedLink: Link) = repository.findByUserid(savedLink.userid)
         .defaultIfEmpty(
             Tags(
                 id = generateId(),
                 children = mapOf("portal" to emptyMap<String, Any>(), "all" to emptyMap()),
-                userid = userId
+                userid = savedLink.userid
             )
         )
         .map { addMissingTags(it, savedLink) }

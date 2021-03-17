@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.Instant
-import java.util.function.Function
 
 private val logger = KotlinLogging.logger {}
 
@@ -22,7 +21,7 @@ class LinkService(
 
     fun create(link: Link, subject: String): Mono<Link> = repository
         .save(link)
-        .doOnSuccess { savedLink -> tagsService.processSavedLink(subject, savedLink) }
+        .doOnSuccess { savedLink -> tagsService.processSavedLink(savedLink) }
 
 
     fun update(subject: String, linkId: String, mapLoadedToBeStored: (l: Link) -> Link): Mono<Link> =
