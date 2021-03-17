@@ -25,9 +25,9 @@ class LinkService(
         .doOnSuccess { savedLink -> tagsService.processSavedLink(subject, savedLink) }
 
 
-    fun update(subject: String, linkId: String, mapNewData: Function<Link, Link>): Mono<Link> =
+    fun update(subject: String, linkId: String, mapLoadedToBeStored: (l: Link) -> Link): Mono<Link> =
         repository.findByIdAndUserid(linkId, subject)
-            .map { mapNewData.apply(it) }
+            .map { mapLoadedToBeStored(it) }
             .flatMap { repository.save(it) }
 
 
