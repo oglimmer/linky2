@@ -1,6 +1,6 @@
 package de.oglimmer.linky
 
-import de.oglimmer.linky.rest.UserRequestParam
+import de.oglimmer.linky.rest.dto.UserRequestParam
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder

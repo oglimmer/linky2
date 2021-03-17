@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import de.oglimmer.linky.entity.Link
-import de.oglimmer.linky.rest.LinkCreate
-import de.oglimmer.linky.rest.UserRequestParam
-import de.oglimmer.linky.rest.UserResponse
+import de.oglimmer.linky.rest.dto.LinkModifyDto
+import de.oglimmer.linky.rest.dto.UserRequestParam
+import de.oglimmer.linky.rest.dto.UserResponse
 import org.hamcrest.core.IsEqual
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
@@ -48,7 +48,7 @@ class LinkRestTest(@Autowired private val webTestClient: WebTestClient, @LocalSe
 
     @Test
     fun test1CreateLink() {
-        val linkCreate = LinkCreate(
+        val linkCreate = LinkModifyDto(
                 linkUrl = "oglimmer.de",
                 tags = listOf("firstTag"),
                 rssUrl = null,
@@ -72,7 +72,7 @@ class LinkRestTest(@Autowired private val webTestClient: WebTestClient, @LocalSe
 
     @Test
     fun test1bCreateLink() {
-        val linkCreate = LinkCreate(
+        val linkCreate = LinkModifyDto(
                 linkUrl = "https://spiegel.de",
                 tags = listOf("anothertag"),
                 rssUrl = null,
@@ -93,7 +93,7 @@ class LinkRestTest(@Autowired private val webTestClient: WebTestClient, @LocalSe
 
     @Test
     fun test1cCreateLink() {
-        val linkCreate = LinkCreate(
+        val linkCreate = LinkModifyDto(
                 linkUrl = "http://geizhals.de",
                 tags = listOf("anothertag"),
                 rssUrl = null,
@@ -157,7 +157,7 @@ class LinkRestTest(@Autowired private val webTestClient: WebTestClient, @LocalSe
 
     @Test
     fun test5UpdateLink() {
-        val linkCreate = LinkCreate(
+        val linkCreate = LinkModifyDto(
                 linkUrl = "zimperium.de",
                 tags = listOf("firstTag"),
                 rssUrl = null,

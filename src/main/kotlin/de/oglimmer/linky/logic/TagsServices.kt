@@ -9,7 +9,7 @@ import java.util.*
 
 @Service
 @Transactional
-class TagsService(private var repository: TagsCrudRepository) {
+class TagsService(private val repository: TagsCrudRepository) {
 
     fun loadAll(subject: String): Mono<Tags> = repository.findByUserid(subject)
 

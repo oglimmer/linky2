@@ -2,7 +2,7 @@ package de.oglimmer.linky.logic
 
 import de.oglimmer.linky.dao.UserCrudRepository
 import de.oglimmer.linky.entity.User
-import de.oglimmer.linky.rest.UserRequestParam
+import de.oglimmer.linky.rest.dto.UserRequestParam
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.security.crypto.bcrypt.BCrypt
@@ -13,7 +13,7 @@ import java.util.*
 
 @Service
 @Transactional
-class UserService(private var repository: UserCrudRepository) {
+class UserService(private val repository: UserCrudRepository) {
 
     companion object {
         val SECRET_KEY = UUID.randomUUID().toString()

@@ -4,7 +4,7 @@ import de.oglimmer.linky.dao.LinkCrudRepository
 import de.oglimmer.linky.dao.TagsCrudRepository
 import de.oglimmer.linky.entity.Link
 import de.oglimmer.linky.entity.Tags
-import de.oglimmer.linky.rest.LinkCreate
+import de.oglimmer.linky.rest.dto.LinkModifyDto
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -23,19 +23,19 @@ class LinkService(
         private val favicon: Favicon,
         private val titleProducer: TitleProducer) {
 
-    fun createLink(linkCreate: LinkCreate, subject: String): Mono<Link> {
-        return titleProducer.buildTitle(linkCreate).flatMap { title ->
-            favicon.loadFavicon(linkCreate.linkUrl)
+    fun createLink(linkModifyDto: LinkModifyDto, subject: String): Mono<Link> {
+        return titleProducer.buildTitle(linkModifyDto).flatMap { title ->
+            favicon.loadFavicon(linkModifyDto.linkUrl)
                     .flatMap { faviconUrl ->
                         repository.save(Link(id = generateId(),
-                                linkUrl = completeProtocol(linkCreate.linkUrl),
+                                linkUrl = completeProtocol(linkModifyDto.linkUrl),
                                 callCounter = 0,
                                 createdDate = Instant.now(),
                                 lastCalled = Instant.now(),
-                                tags = copyTags(linkCreate.tags),
-                                rssUrl = linkCreate.rssUrl,
+                                tags = copyTags(linkModifyDto.tags),
+                                rssUrl = linkModifyDto.rssUrl,
                                 pageTitle = title,
-                                notes = linkCreate.notes,
+                                notes = linkModifyDto.notes,
                                 faviconUrl = faviconUrl,
                                 userid = subject)
                         ).doOnSuccess { savedLink ->
@@ -51,14 +51,14 @@ class LinkService(
         }
     }
 
-    fun updateLink(subject: String, linkId: String, linkCreate: LinkCreate): Mono<Link> =
+    fun updateLink(subject: String, linkId: String, linkModifyDto: LinkModifyDto): Mono<Link> =
             repository.findByIdAndUserid(linkId, subject)
                     .map {
-                        it.copy(linkUrl = completeProtocol(linkCreate.linkUrl),
-                                tags = copyTags(linkCreate.tags),
-                                rssUrl = linkCreate.rssUrl,
-                                pageTitle = linkCreate.pageTitle ?: it.pageTitle,
-                                notes = linkCreate.notes)
+                        it.copy(linkUrl = completeProtocol(linkModifyDto.linkUrl),
+                                tags = copyTags(linkModifyDto.tags),
+                                rssUrl = linkModifyDto.rssUrl,
+                                pageTitle = linkModifyDto.pageTitle ?: it.pageTitle,
+                                notes = linkModifyDto.notes)
                     }
                     .flatMap { repository.save(it) }
 

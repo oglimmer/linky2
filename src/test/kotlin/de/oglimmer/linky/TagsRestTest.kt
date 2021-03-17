@@ -1,7 +1,7 @@
 package de.oglimmer.linky
 
-import de.oglimmer.linky.rest.UserRequestParam
-import de.oglimmer.linky.rest.UserResponse
+import de.oglimmer.linky.rest.dto.UserRequestParam
+import de.oglimmer.linky.rest.dto.UserResponse
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.web.server.LocalServerPort

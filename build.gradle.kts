@@ -5,10 +5,11 @@ import javax.xml.xpath.XPathConstants
 import javax.xml.xpath.XPathFactory
 
 plugins {
-    id("org.springframework.boot") version "2.4.0"
-    id("io.spring.dependency-management") version "1.0.10.RELEASE"
-    kotlin("jvm") version "1.4.20"
-    kotlin("plugin.spring") version "1.4.20"
+    id("org.springframework.boot") version "2.4.3"
+    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    kotlin("jvm") version "1.4.31"
+    kotlin("plugin.spring") version "1.4.31"
+    kotlin("kapt") version "1.4.31"
     id("jacoco")
 }
 
@@ -26,15 +27,15 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("io.jsonwebtoken:jjwt:0.9.1")
+    implementation("io.jsonwebtoken:jjwt:0.9.+")
     implementation("javax.xml.bind:jaxb-api")
     implementation("org.springframework.security:spring-security-oauth2-resource-server")
     implementation("org.springframework.security:spring-security-oauth2-jose")
-    implementation("io.github.microutils:kotlin-logging-jvm:2.0.2")
-    testImplementation("org.testcontainers:testcontainers:1.15.0")
-    testImplementation("org.testcontainers:junit-jupiter:1.15.0")
-    implementation ("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.+")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.3")
+    implementation("io.github.microutils:kotlin-logging-jvm:2.0.+")
+    testImplementation("org.testcontainers:testcontainers:1.15.+")
+    testImplementation("org.testcontainers:junit-jupiter:1.15.+")
+    implementation ("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.+")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.+")
 
 
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
@@ -49,6 +50,9 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.springframework.security:spring-security-test")
+
+    implementation("org.mapstruct:mapstruct:1.4.2.Final")
+    kapt("org.mapstruct:mapstruct-processor:1.4.2.Final")
 }
 
 tasks.withType<Test> {

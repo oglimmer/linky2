@@ -12,12 +12,12 @@ class GlobalControllerExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
     fun handleConflict(e: HttpMessageNotReadableException): ResponseEntity<ApiErrorResult> =
-            responseEntity(e, HttpStatus.BAD_REQUEST)
+        responseEntity(e, HttpStatus.BAD_REQUEST)
 
     private fun responseEntity(e: HttpMessageNotReadableException, status: HttpStatus) =
-            ResponseEntity.status(status).body(ApiErrorResult(status.value(), status.reasonPhrase, e.message))
+        ResponseEntity.status(status).body(ApiErrorResult(status.value(), status.reasonPhrase, e.message))
 
 }
 
-data class ApiErrorResult(val status: Int, val statusPhrase: String, val message: String?) {
+data class ApiErrorResult(private val status: Int, private val statusPhrase: String, private val message: String?) {
 }
