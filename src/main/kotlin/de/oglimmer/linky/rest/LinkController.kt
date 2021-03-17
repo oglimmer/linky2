@@ -1,6 +1,7 @@
 package de.oglimmer.linky.rest
 
 import de.oglimmer.linky.logic.LinkService
+import de.oglimmer.linky.logic.LinkServiceFacade
 import de.oglimmer.linky.rest.dto.LinkDto
 import de.oglimmer.linky.rest.dto.LinkModifyDto
 import de.oglimmer.linky.rest.mapping.LinkMapper
@@ -15,7 +16,9 @@ import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/v1/links")
-class LinkController(private val linkService: LinkService, private val linkMapper: LinkMapper) {
+class LinkController(private val linkService: LinkService,
+                     private val linkServiceFacade: LinkServiceFacade,
+                     private val linkMapper: LinkMapper) {
 
     @GetMapping
     fun loadAll(@AuthenticationPrincipal jwt: Jwt?): Flux<LinkDto> =
@@ -28,7 +31,7 @@ class LinkController(private val linkService: LinkService, private val linkMappe
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@AuthenticationPrincipal jwt: Jwt, @RequestBody linkDto: LinkModifyDto): Mono<LinkDto> =
-        linkService.createLink(linkDto, jwt.subject).map { linkMapper.linkToLinkDto(it) }
+        linkServiceFacade.createLink(linkDto, jwt.subject).map { linkMapper.linkToLinkDto(it) }
 
     @PutMapping("/{linkId}")
     @PreAuthorize("hasPermission(#linkId, 'LINK')")
@@ -37,7 +40,7 @@ class LinkController(private val linkService: LinkService, private val linkMappe
         @PathVariable linkId: String,
         @RequestBody linkDto: LinkModifyDto
     ): Mono<LinkDto> =
-        linkService.updateLink(jwt.subject, linkId, linkDto).map { linkMapper.linkToLinkDto(it) }
+        linkServiceFacade.updateLink(jwt.subject, linkId, linkDto).map { linkMapper.linkToLinkDto(it) }
 
     @GetMapping("/{linkId}")
     @PreAuthorize("hasPermission(#linkId, 'LINK')")

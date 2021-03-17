@@ -1,116 +1,49 @@
 package de.oglimmer.linky.logic
 
 import de.oglimmer.linky.dao.LinkCrudRepository
-import de.oglimmer.linky.dao.TagsCrudRepository
 import de.oglimmer.linky.entity.Link
-import de.oglimmer.linky.entity.Tags
-import de.oglimmer.linky.rest.dto.LinkModifyDto
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.Instant
-import java.util.*
+import java.util.function.Function
 
 private val logger = KotlinLogging.logger {}
+
 
 @Service
 @Transactional
 class LinkService(
-        private val repository: LinkCrudRepository,
-        private val tagsCrudRepository: TagsCrudRepository,
-        private val favicon: Favicon,
-        private val titleProducer: TitleProducer) {
+    private val repository: LinkCrudRepository,
+    private val tagsService: TagsService
+) {
 
-    fun createLink(linkModifyDto: LinkModifyDto, subject: String): Mono<Link> {
-        return titleProducer.buildTitle(linkModifyDto).flatMap { title ->
-            favicon.loadFavicon(linkModifyDto.linkUrl)
-                    .flatMap { faviconUrl ->
-                        repository.save(Link(id = generateId(),
-                                linkUrl = completeProtocol(linkModifyDto.linkUrl),
-                                callCounter = 0,
-                                createdDate = Instant.now(),
-                                lastCalled = Instant.now(),
-                                tags = copyTags(linkModifyDto.tags),
-                                rssUrl = linkModifyDto.rssUrl,
-                                pageTitle = title,
-                                notes = linkModifyDto.notes,
-                                faviconUrl = faviconUrl,
-                                userid = subject)
-                        ).doOnSuccess { savedLink ->
-                            tagsCrudRepository.findByUserid(subject)
-                                    .defaultIfEmpty(Tags(id = generateId(),
-                                            children = mapOf("portal" to emptyMap<String, Any>(), "all" to emptyMap()),
-                                            userid = subject))
-                                    .map { addMissingTags(it, savedLink) }
-                                    .flatMap { tagsCrudRepository.save(it) }
-                                    .subscribe()
-                        }
-                    }
-        }
-    }
+    fun create(link: Link, subject: String): Mono<Link> = repository
+        .save(link)
+        .doOnSuccess { savedLink -> tagsService.processSavedLink(subject, savedLink) }
 
-    fun updateLink(subject: String, linkId: String, linkModifyDto: LinkModifyDto): Mono<Link> =
-            repository.findByIdAndUserid(linkId, subject)
-                    .map {
-                        it.copy(linkUrl = completeProtocol(linkModifyDto.linkUrl),
-                                tags = copyTags(linkModifyDto.tags),
-                                rssUrl = linkModifyDto.rssUrl,
-                                pageTitle = linkModifyDto.pageTitle ?: it.pageTitle,
-                                notes = linkModifyDto.notes)
-                    }
-                    .flatMap { repository.save(it) }
+
+    fun update(subject: String, linkId: String, mapNewData: Function<Link, Link>): Mono<Link> =
+        repository.findByIdAndUserid(linkId, subject)
+            .map { mapNewData.apply(it) }
+            .flatMap { repository.save(it) }
 
 
     fun loadAllLinks(subject: String): Flux<Link> = repository.findByUserid(subject)
 
     fun loadLinksByUserAndTags(subject: String, tags: Array<String>): Flux<Link> =
-            repository.findByUserIdAndTags(subject, tags)
+        repository.findByUserIdAndTags(subject, tags)
 
     fun loadOneLink(subject: String, linkId: String): Mono<Link> = repository.findByIdAndUserid(linkId, subject)
 
     fun deleteLink(linkId: String) = repository.deleteById(linkId)
 
     fun loadAndUpdateForRedirect(subject: String, linkId: String): Mono<Link> =
-            repository.findByIdAndUserid(linkId, subject)
-                    .map { it.copy(callCounter = it.callCounter + 1, lastCalled = Instant.now()) }
-                    .flatMap { repository.save(it) }
-
-
-    @Suppress("UNCHECKED_CAST")
-    private fun found(tags: Map<String, Any>, usedTagInLink: String): Boolean = tags.containsKey(usedTagInLink) ||
-            tags.any { it.value is Map<*, *> && found(it.value as Map<String, Any>, usedTagInLink) }
-
-
-    private fun addMissingTags(tags: Tags, savedLink: Link): Tags {
-        val copyTag = tags.copy(children = tags.children.toMutableMap())
-        savedLink.tags
-                .filter { usedTagInLink -> !found(tags.children, usedTagInLink) }
-                .forEach { missingTag ->
-                    (copyTag.children as MutableMap)[missingTag] = mapOf<String, Any>()
-                }
-        return copyTag
-    }
-
-    private fun completeProtocol(linkUrl: String): String =
-            if (!linkUrl.startsWith("http://") && !linkUrl.startsWith("https://"))
-                "http://$linkUrl"
-            else
-                linkUrl
-
-    private fun copyTags(tags: List<String>): List<String> {
-        val returnList = ArrayList(tags)
-        if (returnList.isEmpty()) {
-            returnList.add("portal")
-        }
-        if (!returnList.contains("all")) {
-            returnList.add("all")
-        }
-        return returnList
-    }
-
-    private fun generateId(): String = UUID.randomUUID().toString()
+        repository.findByIdAndUserid(linkId, subject)
+            .map { it.copy(callCounter = it.callCounter + 1, lastCalled = Instant.now()) }
+            .flatMap { repository.save(it) }
 
 
 }
