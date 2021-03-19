@@ -2,6 +2,7 @@ package de.oglimmer.linky.logic
 
 import de.oglimmer.linky.entity.Link
 import de.oglimmer.linky.rest.dto.LinkModifyDto
+import de.oglimmer.linky.util.IdGen
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
@@ -32,7 +33,7 @@ class LinkServiceFacade(
         faviconUrl: String?,
         subject: String
     ) = Link(
-        id = generateId(),
+        id = IdGen.generateId(),
         linkUrl = completeProtocol(linkModifyDto.linkUrl),
         callCounter = 0,
         createdDate = Instant.now(),
@@ -76,5 +77,4 @@ class LinkServiceFacade(
         return returnList
     }
 
-    private fun generateId(): String = UUID.randomUUID().toString()
 }

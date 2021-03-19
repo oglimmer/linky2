@@ -3,6 +3,7 @@ package de.oglimmer.linky.logic
 import de.oglimmer.linky.dao.UserCrudRepository
 import de.oglimmer.linky.entity.User
 import de.oglimmer.linky.rest.dto.UserRequestParam
+import de.oglimmer.linky.util.IdGen
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.security.crypto.bcrypt.BCrypt
@@ -16,12 +17,12 @@ import java.util.*
 class UserService(private val repository: UserCrudRepository) {
 
     companion object {
-        val SECRET_KEY = UUID.randomUUID().toString()
+        val SECRET_KEY = IdGen.generateId()
         const val TOKEN_LIFETIME = 1000 * 60 * 60
     }
 
     fun createUser(userRequestParam: UserRequestParam): Mono<String> = repository
-            .save(User(UUID.randomUUID().toString(),
+            .save(User(IdGen.generateId(),
                     userRequestParam.email,
                     BCrypt.hashpw(userRequestParam.password, BCrypt.gensalt())))
             .map { createJwt(it) }

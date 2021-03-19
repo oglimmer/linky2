@@ -3,6 +3,7 @@ package de.oglimmer.linky.logic
 import de.oglimmer.linky.dao.TagsCrudRepository
 import de.oglimmer.linky.entity.Link
 import de.oglimmer.linky.entity.Tags
+import de.oglimmer.linky.util.IdGen
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
@@ -16,7 +17,7 @@ class TagsService(private val repository: TagsCrudRepository) {
 
     fun create(userId: String): Mono<Tags> = repository.save(
         Tags(
-            id = UUID.randomUUID().toString(),
+            id = IdGen.generateId(),
             children = mapOf("portal" to emptyMap<String, Any>(), "all" to emptyMap()),
             userid = userId
         )
@@ -25,7 +26,7 @@ class TagsService(private val repository: TagsCrudRepository) {
     fun processSavedLink(savedLink: Link) = repository.findByUserid(savedLink.userid)
         .defaultIfEmpty(
             Tags(
-                id = generateId(),
+                id = IdGen.generateId(),
                 children = mapOf("portal" to emptyMap<String, Any>(), "all" to emptyMap()),
                 userid = savedLink.userid
             )
@@ -49,8 +50,6 @@ class TagsService(private val repository: TagsCrudRepository) {
     private fun found(tags: Map<String, Any>, usedTagInLink: String): Boolean = tags.containsKey(usedTagInLink) ||
             tags.any { it.value is Map<*, *> && found(it.value as Map<String, Any>, usedTagInLink) }
 
-
-    private fun generateId(): String = UUID.randomUUID().toString()
 
 }
 
