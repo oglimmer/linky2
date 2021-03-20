@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-set BASE_URL "http://localhost:8080"
+set BASE_URL "http://localhost:8081"
 
 set USER_EMAIL "user@bar.com"
 set USER_PASSWORD "passwd1"
