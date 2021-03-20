@@ -24,7 +24,7 @@ class UserService(private val repository: UserCrudRepository) {
     fun createUser(userRequestParam: UserRequestParam): Mono<String> = repository
             .save(User(IdGen.generateId(),
                     userRequestParam.email,
-                    BCrypt.hashpw(userRequestParam.password, BCrypt.gensalt())))
+                    BCrypt.hashpw(userRequestParam.password, BCrypt.gensalt(4))))
             .map { createJwt(it) }
 
     fun validateUserPassword(userRequestParam: UserRequestParam): Mono<String> = repository

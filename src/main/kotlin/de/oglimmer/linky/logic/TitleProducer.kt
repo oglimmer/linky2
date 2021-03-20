@@ -21,10 +21,6 @@ class TitleProducer {
         return "${urlClass.protocol}://${urlClass.host}" + if (urlClass.defaultPort != urlClass.port && urlClass.port != -1) ":${urlClass.port}" else ""
     }
 
-    private fun buildUrl(url: String): String {
-        return "${getBaseUrl(url)}/favicon.ico"
-    }
-
     fun buildTitle(linkModifyDto: LinkModifyDto): Mono<String> =
             if (linkModifyDto.pageTitle != null && linkModifyDto.pageTitle.isNotBlank())
                 Mono.just(linkModifyDto.pageTitle)
@@ -32,7 +28,7 @@ class TitleProducer {
                 HttpClient.create()
                         .followRedirect(true)
                         .get()
-                        .uri(buildUrl(linkModifyDto.linkUrl))
+                        .uri(getBaseUrl(linkModifyDto.linkUrl))
                         .responseSingle { _, bytes -> bytes.asString() }
                         .map { TitleHtmlScraper.getTitleFromHtml(it) ?: linkModifyDto.linkUrl }
 
